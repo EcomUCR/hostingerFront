@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# 🚀 Script de deploy automático de develop → main
-
-set -e  # Si ocurre un error, detiene la ejecución
+# 🚀 Script de deploy automático de develop → main (versión segura)
+set -e  # Detiene el script si ocurre un error
 
 echo "=== Cambiando a develop ==="
 git checkout develop
@@ -13,24 +12,35 @@ npm run build
 echo "=== Cambiando a main ==="
 git checkout main
 
-echo "=== Limpiando rama main (excepto .gitignore) ==="
+echo "=== Limpiando rama main (excepto .gitignore, node_modules y .env) ==="
 # Guarda temporalmente el .gitignore si existe
 if [ -f ".gitignore" ]; then
   cp .gitignore /tmp/.gitignore_backup
 fi
 
-# Elimina todo menos .git y .gitignore
-find . -mindepth 1 -maxdepth 1 ! -name '.git' ! -name '.gitignore' -exec rm -rf {} +
+# Elimina todo menos .git, .gitignore, node_modules y .env
+find . -mindepth 1 -maxdepth 1 \
+  ! -name '.git' \
+  ! -name '.gitignore' \
+  ! -name 'node_modules' \
+  ! -name '.env' \
+  -exec rm -rf {} +
 
 # Restaura el .gitignore si se guardó
 if [ -f "/tmp/.gitignore_backup" ]; then
   mv /tmp/.gitignore_backup .gitignore
 fi
 
-echo "=== Copiando archivos de dist ==="
-git checkout develop -- dist
-cp -r dist/* .
-rm -rf dist
+echo "=== Copiando archivos de dist (local, no con Git) ==="
+# Volvemos momentáneamente a develop para copiar el build local
+git checkout develop --quiet
+mkdir -p /tmp/deploy_dist
+cp -r dist/* /tmp/deploy_dist/
+
+# Volvemos a main y copiamos el contenido
+git checkout main --quiet
+cp -r /tmp/deploy_dist/* .
+rm -rf /tmp/deploy_dist
 
 echo "=== Haciendo commit y push ==="
 git add .
