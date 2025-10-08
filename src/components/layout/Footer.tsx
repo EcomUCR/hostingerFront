@@ -27,7 +27,7 @@ export default function Footer() {
                         </ul>
                     </div>
                     <div className="flex flex-col gap-3 items-center">
-                        <p className="font-semibold text-xl">Síguenos en</p>
+                        <p className="font-semibold text-xl">Síguenos en:</p>
                         <div className="flex gap-4">
                             <IconBrandFacebook />
                             <IconBrandInstagram />
