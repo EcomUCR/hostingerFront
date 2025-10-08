@@ -79,7 +79,7 @@ return (
     {/* Ofertas: solo productos con descuento */}
     <section className="mx-10 my-10">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold font-quicksand">Ofertas</h2>
+        <h2 className="text-2xl font-semibold font-quicksand">Ofertas </h2>
         <div>
           <a href="#" className="font-semibold">
             Ver más
