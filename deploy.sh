@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 🚀 Script de deploy automático de develop → main (versión Windows-safe)
+# 🚀 Script de deploy automático de develop → main (versión estable para Windows)
 set -e  # Detiene el script si ocurre un error
 
 start_time=$(date +%s)
@@ -10,6 +10,12 @@ git checkout develop
 
 echo "=== Ejecutando build ==="
 npm run build
+
+echo "=== Copiando build temporalmente ==="
+# Copia el dist mientras estamos en develop
+mkdir -p /tmp/deploy_dist
+rm -rf /tmp/deploy_dist/*
+cp -r dist/* /tmp/deploy_dist/
 
 echo "=== Cambiando a main ==="
 git checkout main
@@ -30,16 +36,9 @@ if [ -f "/tmp/.gitignore_backup" ]; then
   mv /tmp/.gitignore_backup .gitignore
 fi
 
-echo "=== Copiando archivos de dist (desde develop local) ==="
-# Copia temporal del dist local desde develop
-git checkout develop --quiet
-mkdir -p ../deploy_temp
-cp -r dist/* ../deploy_temp/
-
-# Volvemos a main y movemos los archivos
-git checkout main --quiet
-cp -r ../deploy_temp/* .
-rm -rf ../deploy_temp
+echo "=== Copiando archivos desde /tmp/deploy_dist a main ==="
+cp -r /tmp/deploy_dist/* .
+rm -rf /tmp/deploy_dist
 
 echo "=== Haciendo commit y push ==="
 git add .
@@ -53,3 +52,6 @@ end_time=$(date +%s)
 elapsed=$((end_time - start_time))
 
 echo "✅ Deploy completado correctamente en ${elapsed}s"
+
+# Elimina /tmp/deploy_dist
+rm -rf /tmp/deploy_dist
