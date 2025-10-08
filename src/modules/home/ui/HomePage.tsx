@@ -82,7 +82,7 @@ return (
         <h2 className="text-2xl font-semibold font-quicksand">Ofertas</h2>
         <div>
           <a href="#" className="font-semibold">
-            Ver todo
+            Ver menos
           </a>
           <IconChevronRight className="inline" />
         </div>
